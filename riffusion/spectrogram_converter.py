@@ -90,10 +90,10 @@ class SpectrogramConverter:
             sample_rate=params.sample_rate,
             f_min=params.min_frequency,
             f_max=params.max_frequency,
-            max_iter=params.max_mel_iters,
-            tolerance_loss=1e-5,
-            tolerance_change=1e-8,
-            sgdargs=None,
+            # max_iter=params.max_mel_iters,
+            # tolerance_loss=1e-5,
+            # tolerance_change=1e-8,
+            # sgdargs=None,
             norm=params.mel_scale_norm,
             mel_scale=params.mel_scale_type,
         ).to(self.device)
@@ -202,3 +202,75 @@ class SpectrogramConverter:
 
         # Run the approximate algorithm to compute the phase and recover the waveform
         return self.inverse_spectrogram_func(amplitudes_linear)
+# import numpy as np
+# from moviepy.editor import AudioFileClip
+# from moviepy.audio.AudioClip import AudioArrayClip
+# # from moviepy.audio.fx.all import audio_fadein, audio_fadeout
+# import tempfile
+# class SpectrogramConverter:
+#     def __init__(self, params, device="cuda"):
+#         self.p = params
+#         self.device = device  # We are not using this, but keeping for compatibility
+#
+#     def spectrogram_from_audio(self, audio_path):
+#         """
+#         Compute a spectrogram from an audio segment.
+#         Args:
+#             audio_path: Path to the audio file
+#         Returns:
+#             spectrogram: (frequency, time)
+#         """
+#         audio_clip = AudioFileClip(audio_path)
+#         samples = audio_clip.to_soundarray(fps=self.p.sample_rate)
+#
+#         return self.mel_amplitudes_from_waveform(samples)
+#
+#     def audio_from_spectrogram(self, spectrogram, duration, apply_filters=True):
+#         """
+#         Reconstruct an audio segment from a spectrogram.
+#         Args:
+#             spectrogram: (frequency, time)
+#             duration: Duration of the audio in seconds
+#             apply_filters: Post-process with normalization and compression
+#         Returns:
+#             audio: Audio segment as a numpy array
+#         """
+#         waveform = self.waveform_from_mel_amplitudes(spectrogram)
+#         audio_clip = AudioArrayClip(waveform, fps=self.p.sample_rate).set_duration(duration)
+#         if apply_filters:
+#             audio_clip = self.apply_filters(audio_clip)
+#         return audio_clip
+#
+#     def mel_amplitudes_from_waveform(self, waveform):
+#         """
+#         Convert waveform to mel-scale amplitudes.
+#         Args:
+#             waveform: (samples, channels)
+#         Returns:
+#             amplitudes_mel: (frequency, time)
+#         """
+#         # This is a placeholder. Implement actual mel conversion if needed.
+#         return np.abs(np.fft.rfft(waveform, axis=0))
+#
+#     def waveform_from_mel_amplitudes(self, amplitudes_mel):
+#         """
+#         Convert mel-scale amplitudes back to waveform.
+#         Args:
+#             amplitudes_mel: (frequency, time)
+#         Returns:
+#             waveform: (samples, channels)
+#         """
+#         # This is a placeholder. Implement actual inverse mel conversion if needed.
+#         return np.fft.irfft(amplitudes_mel, axis=0)
+
+    # def apply_filters(self, audio_clip):
+    #     """
+    #     Apply post-processing filters to the audio segment.
+    #     Args:
+    #         audio_clip: MoviePy AudioClip
+    #     Returns:
+    #         Filtered audio clip
+    #     """
+    #     audio_clip = audio_fadein(audio_clip, 1)  # Fade in over 1 second
+    #     audio_clip = audio_fadeout(audio_clip, 1)  # Fade out over 1 second
+    #     return audio_clip

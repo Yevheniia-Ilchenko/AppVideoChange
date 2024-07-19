@@ -113,7 +113,7 @@ def render() -> None:
         )
 
         streamlit_util.display_and_download_audio(
-            segment, name=f"{prompt.replace(' ', '_')}_{seed}", extension=extension
+             segment, name=f"{prompt.replace(' ', '_')}_{seed}", extension=extension
         )
 
         seed += 1
