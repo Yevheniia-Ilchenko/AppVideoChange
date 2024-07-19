@@ -1,67 +1,52 @@
-# :guitar: Riffusion
+# 🎬✂️AppVideoChange✂️🎬
 
-<a href="https://github.com/riffusion/riffusion/actions/workflows/ci.yml?query=branch%3Amain"><img alt="CI status" src="https://github.com/riffusion/riffusion/actions/workflows/ci.yml/badge.svg" /></a>
-<img alt="Python 3.9 | 3.10" src="https://img.shields.io/badge/Python-3.9%20%7C%203.10-blue" />
-<a href="https://github.com/riffusion/riffusion/tree/main/LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellowgreen" /></a>
+This project is a web application for manipulating video files. It allows users to upload a video, split it into multiple clips, generate an audio track based on a user-provided prompt, and replace the audio of a specified clip with the generated audio. The application provides an option to display the clips in multiple columns to avoid long scrolling and allows downloading all clips as a zip file.
 
-Riffusion is a library for real-time music and audio generation with stable diffusion.
+## Features
+ - Upload a video file (supported formats: mp4, mov, avi).
+ - Specify the number of clips to split the video into.
+ - Enter a prompt to generate an audio track.
+ - Choose which clip to replace the audio with the generated audio track.
+ - Optionally specify the number of columns to display the clips.
+ - Download all processed clips as a zip file.
+ - Uses Riffusion for audio generation (preferably run on GPU).
+ - Ensures the generated audio matches the duration of the target clip.
+## Technologies
+- **Streamlit**: For the user interface.
+- **MoviePy**: For video manipulation.
+- **Riffusion**: For audio generation from text prompts.
 
-Read about it at https://www.riffusion.com/about and try it at https://www.riffusion.com/.
+### Installation
+Prerequisites
+Python 3.8 or later
+Anaconda or Miniconda (recommended for managing dependencies)
 
-This is the core repository for riffusion image and audio processing code.
-
- * Diffusion pipeline that performs prompt interpolation combined with image conditioning
- * Conversions between spectrogram images and audio clips
- * Command-line interface for common tasks
- * Interactive app using streamlit
- * Flask server to provide model inference via API
- * Various third party integrations
-
-Related repositories:
-* Web app: https://github.com/riffusion/riffusion-app
-* Model checkpoint: https://huggingface.co/riffusion/riffusion-model-v1
-
-## Citation
-
-If you build on this work, please cite it as follows:
+- Clone the repository:
 
 ```
-@article{Forsgren_Martiros_2022,
-  author = {Forsgren, Seth* and Martiros, Hayk*},
-  title = {{Riffusion - Stable diffusion for real-time music generation}},
-  url = {https://riffusion.com/about},
-  year = {2022}
-}
+git clone https://github.com/Yevheniia-Ilchenko/AppVideoChange.git
 ```
+- Create and activate a virtual environment:
 
-## Install
 
-Tested in CI with Python 3.9 and 3.10.
+- Install dependencies:
 
-It's highly recommended to set up a virtual Python environment with `conda` or `virtualenv`:
 ```
-conda create --name riffusion python=3.9
-conda activate riffusion
+pip install -r requirements.txt
 ```
-
-Install Python dependencies:
+- Run the application with Streamlit:
 ```
-python -m pip install -r requirements.txt
+streamlit run newmain.py
 ```
+## Usage
+- Upload Video: Upload the video file you want to manipulate.
+- Specify Clips: Enter the number of clips you want to split the video into.
+- Enter Prompt: Provide a text prompt for generating the audio track.
+- Select Clip: Choose the clip index to replace its audio with the generated track.
+- Optional Settings: Specify the number of columns to display the clips (default is 3 columns).
+- Process Video: Click the "Process Video" button to start the processing.
+- Download Clips: Once processing is complete, download the processed clips as a zip file.
 
-In order to use audio formats other than WAV, [ffmpeg](https://ffmpeg.org/download.html) is required.
-```
-sudo apt-get install ffmpeg          # linux
-brew install ffmpeg                  # mac
-conda install -c conda-forge ffmpeg  # conda
-```
-
-If torchaudio has no backend, you may need to install `libsndfile`. See [this issue](https://github.com/riffusion/riffusion/issues/12).
-
-If you have an issue, try upgrading [diffusers](https://github.com/huggingface/diffusers). Tested with 0.9 - 0.11.
-
-Guides:
-* [Simple Install Guide for Windows](https://www.reddit.com/r/riffusion/comments/zrubc9/installation_guide_for_riffusion_app_inference/)
 
 ## Backends
 
@@ -99,122 +84,14 @@ import torch
 torch.backends.mps.is_available()
 ```
 
-## Command-line interface
 
-Riffusion comes with a command line interface for performing common tasks.
-
-See available commands:
-```
-python -m riffusion.cli -h
-```
-
-Get help for a specific command:
-```
-python -m riffusion.cli image-to-audio -h
-```
-
-Execute:
-```
-python -m riffusion.cli image-to-audio --image spectrogram_image.png --audio clip.wav
-```
-
-## Riffusion Playground
+## AppVideoChange
 
 Riffusion contains a [streamlit](https://streamlit.io/) app for interactive use and exploration.
 
-Run with:
-```
-python -m riffusion.streamlit.playground
-```
+
 
 And access at http://127.0.0.1:8501/
 
-<img alt="Riffusion Playground" style="width: 600px" src="https://i.imgur.com/OOMKBbT.png" />
+![home page](static/img/AppVideoChange.jpg)
 
-## Run the model server
-
-Riffusion can be run as a flask server that provides inference via API. This server enables the [web app](https://github.com/riffusion/riffusion-app) to run locally.
-
-Run with:
-
-```
-python -m riffusion.server --host 127.0.0.1 --port 3013
-```
-
-You can specify `--checkpoint` with your own directory or huggingface ID in diffusers format.
-
-Use the `--device` argument to specify the torch device to use.
-
-The model endpoint is now available at `http://127.0.0.1:3013/run_inference` via POST request.
-
-Example input (see [InferenceInput](https://github.com/hmartiro/riffusion-inference/blob/main/riffusion/datatypes.py#L28) for the API):
-```
-{
-  "alpha": 0.75,
-  "num_inference_steps": 50,
-  "seed_image_id": "og_beat",
-
-  "start": {
-    "prompt": "church bells on sunday",
-    "seed": 42,
-    "denoising": 0.75,
-    "guidance": 7.0
-  },
-
-  "end": {
-    "prompt": "jazz with piano",
-    "seed": 123,
-    "denoising": 0.75,
-    "guidance": 7.0
-  }
-}
-```
-
-Example output (see [InferenceOutput](https://github.com/hmartiro/riffusion-inference/blob/main/riffusion/datatypes.py#L54) for the API):
-```
-{
-  "image": "< base64 encoded JPEG image >",
-  "audio": "< base64 encoded MP3 clip >"
-}
-```
-
-## Tests
-Tests live in the `test/` directory and are implemented with `unittest`.
-
-To run all tests:
-```
-python -m unittest test/*_test.py
-```
-
-To run a single test:
-```
-python -m unittest test.audio_to_image_test
-```
-
-To preserve temporary outputs for debugging, set `RIFFUSION_TEST_DEBUG`:
-```
-RIFFUSION_TEST_DEBUG=1 python -m unittest test.audio_to_image_test
-```
-
-To run a single test case within a test:
-```
-python -m unittest test.audio_to_image_test -k AudioToImageTest.test_stereo
-```
-
-To run tests using a specific torch device, set `RIFFUSION_TEST_DEVICE`. Tests should pass with
-`cpu`, `cuda`, and `mps` backends.
-
-## Development Guide
-Install additional packages for dev with `python -m pip install -r requirements_dev.txt`.
-
-* Linter: `ruff`
-* Formatter: `black`
-* Type checker: `mypy`
-
-These are configured in `pyproject.toml`.
-
-The results of `mypy .`, `black .`, and `ruff .` *must* be clean to accept a PR.
-
-CI is run through GitHub Actions from `.github/workflows/ci.yml`.
-
-Contributions are welcome through pull requests.
