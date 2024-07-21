@@ -87,7 +87,7 @@ torch.backends.mps.is_available()
 
 ## AppVideoChange
 
-Riffusion contains a [streamlit](https://streamlit.io/) app for interactive use and exploration.
+AppVideoChange contains a [streamlit](https://streamlit.io/) app for interactive use and exploration.
 
 
 
