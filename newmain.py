@@ -7,7 +7,8 @@ from riffusion.streamlit import util as streamlit_util
 import os
 import tempfile
 import zipfile
-from moviepy.editor import VideoFileClip, AudioFileClip
+from moviepy.editor import VideoFileClip, AudioFileClip, vfx
+from pydub import AudioSegment
 
 
 def generate_audio(prompt, duration, device, params, seed):
@@ -30,9 +31,25 @@ def generate_audio(prompt, duration, device, params, seed):
         device=device,
     )
 
+    audio_segment = AudioSegment(
+        segment.raw_data,
+        frame_rate=segment.frame_rate,
+        sample_width=segment.sample_width,
+        channels=segment.channels
+    )
+
+    audio_duration_ms = int(duration * 1000)
+
+    if len(audio_segment) < audio_duration_ms:
+        loop_segment = audio_segment
+        while len(audio_segment) < audio_duration_ms:
+            audio_segment += loop_segment
+
+    audio_segment = audio_segment[:audio_duration_ms]
     audio_path = os.path.join(tempfile.gettempdir(),
                               f"{prompt.replace(' ', '_')}_{seed}.mp3")
-    segment.export(audio_path, format="mp3")
+
+    audio_segment.export(audio_path, format="mp3")
     return audio_path
 
 
@@ -54,6 +71,7 @@ def process_video(
         params,
         seed
 ):
+    st.info("Processing video...")
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_video:
         tmp_video.write(uploaded_file.read())
         video_path = tmp_video.name
@@ -61,9 +79,10 @@ def process_video(
     clips = split_video_into_clips(video_path, num_clips)
 
     duration = clips[target_clip_index].duration
+
     audio_clip_path = generate_audio(prompt, duration, device, params, seed)
 
-    audio = AudioFileClip(audio_clip_path)
+    audio = AudioFileClip(audio_clip_path).fx(vfx.loop, duration=duration)
     clips[target_clip_index] = clips[target_clip_index].set_audio(audio)
 
     clip_paths = []
@@ -124,22 +143,25 @@ starting_seed = T.cast(
 
 if st.button("Process Video"):
     if video_file is not None:
-        clip_paths = process_video(
-            video_file, num_clips,
-            prompt,
-            clip_index - 1,
-            num_columns,
-            device,
-            params,
-            starting_seed
-        )
+        try:
+            clip_paths = process_video(
+                video_file, num_clips,
+                prompt,
+                clip_index - 1,
+                num_columns,
+                device,
+                params,
+                starting_seed
+            )
 
-        zip_path = create_zip_file(clip_paths)
-        st.success("Video processing completed!")
-        st.download_button("Download Clips",
-                           data=open(zip_path, "rb"),
-                           file_name="clips.zip")
+            zip_path = create_zip_file(clip_paths)
+            st.success("Video processing completed!")
+            st.download_button("Download Clips",
+                               data=open(zip_path, "rb"),
+                               file_name="clips.zip")
 
-        cols = st.columns(num_columns)
-        for i, clip_path in enumerate(clip_paths):
-            cols[i % num_columns].video(clip_path)
+            cols = st.columns(num_columns)
+            for i, clip_path in enumerate(clip_paths):
+                cols[i % num_columns].video(clip_path)
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
