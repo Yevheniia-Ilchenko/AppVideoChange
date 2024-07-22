@@ -16,7 +16,7 @@ This project is a web application for manipulating video files. It allows users 
 - **MoviePy**: For video manipulation.
 - **Riffusion**: For audio generation from text prompts.
 
-### Installation
+## Installation GitHub
 Prerequisites
 Python 3.8 or later
 Anaconda or Miniconda (recommended for managing dependencies)
@@ -34,10 +34,42 @@ git clone https://github.com/Yevheniia-Ilchenko/AppVideoChange.git
 ```
 pip install -r requirements.txt
 ```
-- Run the application with Streamlit:
+### Run the application with Streamlit:
 ```
 streamlit run newmain.py
 ```
+### Run the application with Docker (locally):
+If you want to build and run the Docker image locally with Docker, follow these steps:
+- Build the Docker image:
+``` 
+docker build -t your-local-image-name .
+```
+
+- Run the Docker container:
+```
+docker run -p 8501:8501 your-local-image-name
+```
+Replace 8501:8501 with the appropriate port mapping if your application uses different ports.
+
+## Installation DockerHub
+
+- Login into the Docker:
+```
+docker login
+```
+- Pull the project:
+
+```
+docker pull evgeniiailchenko/appvideochange
+```
+### Run the Docker container:
+
+```
+docker run -p 8501:8501 appvideochange
+```
+Replace 8501:8501 with the appropriate port mapping if your application uses different ports.
+
+
 ## Usage
 - Upload Video: Upload the video file you want to manipulate.
 - Specify Clips: Enter the number of clips you want to split the video into.
